@@ -4,9 +4,9 @@ from django.db.models import UniqueConstraint
 
 
 class MyUser(AbstractUser):
-    username = models.CharField(max_length=150, unique=True,)
+    username = models.CharField(max_length=150, unique=True, )
     email = models.EmailField(unique=True, max_length=254)
-    first_name = models.CharField(max_length=150,)
+    first_name = models.CharField(max_length=150, )
     last_name = models.CharField(max_length=150)
     password = models.CharField(max_length=150)
     USERNAME_FIELD = 'email'
@@ -23,3 +23,13 @@ class MyUser(AbstractUser):
                                         name='unique_booking')]
         ordering = ['username']
 
+
+class Subscribe(models.Model):
+    user = models.ForeignKey(MyUser,
+                             related_name='follower',
+                             verbose_name='Подписчик',
+                             on_delete=models.CASCADE)
+    author = models.ForeignKey(MyUser,
+                               verbose_name='Автор',
+                               related_name='following',
+                               on_delete=models.CASCADE)

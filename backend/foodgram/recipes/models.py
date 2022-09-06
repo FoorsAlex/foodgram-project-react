@@ -30,6 +30,9 @@ class Recipe(models.Model):
     is_favorited = models.BooleanField(default=False)
     is_in_shopping_cart = models.BooleanField(default=False)
 
+    class Meta:
+        ordering = ['-pub_date']
+
 
 class IngredientAmount(models.Model):
     ingredient = models.ForeignKey(Ingredient,
@@ -63,16 +66,10 @@ class Favorite(models.Model):
                                         )
     user = models.ForeignKey(User,
                              related_name='user_added_favorite',
-                             verbose_name='Автор рецепта',
+                             verbose_name='Пользователь,'
+                                          ' добавивший рецепт в избранное',
                              on_delete=models.CASCADE)
 
 
-class Subscribe(models.Model):
-    user = models.ForeignKey(User,
-                             related_name='follower',
-                             verbose_name='Подписчик',
-                             on_delete=models.CASCADE)
-    author = models.ForeignKey(User,
-                               verbose_name='Автор',
-                               related_name='following',
-                               on_delete=models.CASCADE)
+
+

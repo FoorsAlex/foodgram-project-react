@@ -6,7 +6,8 @@ from rest_framework.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer as DjoserUserSerializer
 
-from recipes.models import Subscribe, Tag, Recipe, Ingredient, IngredientAmount, Favorite, ShoppingCart
+from recipes.models import Tag, Recipe, Ingredient, IngredientAmount, Favorite, ShoppingCart
+from users.models import Subscribe
 
 User = get_user_model()
 
@@ -33,29 +34,24 @@ class SubscribeRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ['id', 'name', 'image', 'cooking_time']
+        read_only_fields = ('__all__',)
 
 
-class SubcriptionsSerializer(serializers.Serializer):
-    recipes = SubscribeRecipeSerializer(many=True, read_only=True)
+class SubcriptionsSerializer(UserSerializer):
+    recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
     def get_recipes_count(self, obj):
         return obj.author.count()
 
-    def to_representation(self, instance):
-        recipes = SubscribeRecipeSerializer(
-            instance=instance.author,
-            many=True
-        ).data
-        data = super(SubcriptionsSerializer, self).to_representation(instance)
-        data['recipes'] = recipes
-        return data
+    def get_recipes(self, obj):
+        recipes = SubscribeRecipeSerializer(instance=obj.author,
+                                            many=True).data
+        return recipes
 
     class Meta:
         model = User
-        fields = [
-            'email', 'id', 'username', 'first_name',
-            'last_name', 'recipes', 'recipes_count']
+        fields = UserSerializer.Meta.fields + ['recipes', 'recipes_count']
         read_only_fields = ('__all__',)
 
 
