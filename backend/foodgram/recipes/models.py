@@ -27,8 +27,6 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(Tag, related_name='tags')
     pub_date = models.DateTimeField(auto_now_add=True)
     cooking_time = models.IntegerField()
-    is_favorited = models.BooleanField(default=False)
-    is_in_shopping_cart = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['-pub_date']
@@ -52,7 +50,7 @@ class ShoppingCart(models.Model):
                                verbose_name=('Рецепт '
                                              'в списке покупок'),
                                related_name='shopping_cart_recipe')
-    user = models.ForeignKey(Recipe,
+    user = models.ForeignKey(User,
                              on_delete=models.CASCADE,
                              verbose_name='Владелец списка',
                              related_name='owner_cart')

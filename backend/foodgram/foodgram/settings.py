@@ -22,7 +22,8 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'rest_framework.authtoken',
-    'djoser'
+    'djoser',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -108,7 +109,7 @@ AUTH_USER_MODEL = 'users.MyUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
