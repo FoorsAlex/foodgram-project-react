@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, permissions, status, pagination
+from rest_framework import viewsets, permissions, status, pagination, filters
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
@@ -11,32 +11,34 @@ from django.http import FileResponse
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 
-from .serializers import UserSerializer, RecipeSerializer, SubcriptionsSerializer, SubscribeRecipeSerializer
+from .serializers import UserSerializer, RecipeSerializer, SubcriptionsSerializer, SubscribeRecipeSerializer, \
+    IngredientSerializer
 from .permissions import IsAuthenticatedOrReadOnly
-from recipes.models import Recipe, Favorite, IngredientAmount, ShoppingCart
+from recipes.models import Recipe, Favorite, IngredientAmount, ShoppingCart, Ingredient
 from users.models import Subscribe
 from .paginations import PageNumberLimitPagination
 from .filtersets import RecipeFilterSet
+from .viewsets import RetrieveListViewSet
 
 User = get_user_model()
 
 
 class UserViewSet(DjoserUserViewSet):
     queryset = User.objects.all()
-    pagination_class = pagination.PageNumberPagination
+    pagination_class = PageNumberLimitPagination
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, ]
 
     @action(methods=['get'],
-            detail=False,
-            pagination_class=pagination.PageNumberPagination)
+            detail=False)
     def subscriptions(self, request):
         user = request.user
         subscriptions = User.objects.filter(following__user=user)
-        serializer = SubcriptionsSerializer(subscriptions,
+        page = self.paginate_queryset(subscriptions)
+        serializer = SubcriptionsSerializer(page,
                                             many=True,
                                             context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return self.get_paginated_response(serializer.data)
 
     @action(methods=['post', 'delete'],
             detail=True,
@@ -66,7 +68,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     pagination_class = PageNumberLimitPagination
     serializer_class = RecipeSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly,]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilterSet
 
@@ -134,3 +136,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         doc.build(Story)
         buffer.seek(0)
         return FileResponse(buffer, filename='shopping_cart.pdf')
+
+
+class IngredientViewSet(RetrieveListViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ('^name',)

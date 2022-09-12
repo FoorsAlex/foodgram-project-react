@@ -1,5 +1,3 @@
-import re
-
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -48,6 +46,16 @@ class SubcriptionsSerializer(UserSerializer):
         recipes = SubscribeRecipeSerializer(instance=obj.author,
                                             many=True).data
         return recipes
+
+    def to_representation(self, instance):
+        recipes = SubscribeRecipeSerializer(instance=instance.author,
+                                            many=True).data
+        query_params = self.context.get('request').query_params
+        data = super(SubcriptionsSerializer, self).to_representation(instance)
+        if 'recipes_limit' in query_params:
+            recipes_limit = int(query_params['recipes_limit'])
+            data['recipes'] = recipes[:recipes_limit]
+        return data
 
     class Meta:
         model = User

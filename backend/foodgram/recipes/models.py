@@ -9,10 +9,16 @@ class Tag(models.Model):
     color = models.CharField(max_length=7)
     slug = models.SlugField(max_length=200, default=None, unique=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=200)
     measurement_unit = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
 
 
 class Recipe(models.Model):
@@ -27,6 +33,9 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(Tag, related_name='tags')
     pub_date = models.DateTimeField(auto_now_add=True)
     cooking_time = models.IntegerField()
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         ordering = ['-pub_date']
