@@ -12,9 +12,9 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 
 from .serializers import UserSerializer, RecipeSerializer, SubcriptionsSerializer, SubscribeRecipeSerializer, \
-    IngredientSerializer
+    IngredientSerializer, TagSerializer
 from .permissions import IsAuthenticatedOrReadOnly
-from recipes.models import Recipe, Favorite, IngredientAmount, ShoppingCart, Ingredient
+from recipes.models import Recipe, Favorite, IngredientAmount, ShoppingCart, Ingredient, Tag
 from users.models import Subscribe
 from .paginations import PageNumberLimitPagination
 from .filtersets import RecipeFilterSet
@@ -42,7 +42,8 @@ class UserViewSet(DjoserUserViewSet):
 
     @action(methods=['post', 'delete'],
             detail=True,
-            permission_classes=[permissions.IsAuthenticated])
+            permission_classes=[permissions.IsAuthenticated],
+            )
     def subscribe(self, request, id=None):
         user = request.user
         author = get_object_or_404(User, id=id)
@@ -143,3 +144,8 @@ class IngredientViewSet(RetrieveListViewSet):
     serializer_class = IngredientSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ('^name',)
+
+
+class TagViewSet(RetrieveListViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
