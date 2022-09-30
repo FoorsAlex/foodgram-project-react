@@ -12,4 +12,4 @@ djoser==2.1.0
 drf-extra-fields==3.4.0
 reportlab==3.6.11
 python-dotenv==0.21.0
-
+sorl-thumbnail==12.8.0
