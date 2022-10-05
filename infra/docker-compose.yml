@@ -32,3 +32,6 @@ services:
     env_file:
       - ./.env
 
+volumes:
+  static_value:
+  media_value:
