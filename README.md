@@ -13,13 +13,15 @@ Foodgram - «Продуктовый помощник»
 - Склонируйте репозиторий на локальную машину:
 git clone git@github.com:FoorsAlex/foodgram-project-react.git
 - Создайте .env файл в директории backend/foodgram/, в котором должны содержаться следующие переменные для подключения к базе PostgreSQL:
-
+- 
+```
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=Имя вашей базы данных
 POSTGRES_USER=username пользователя с доступом к базе данных
 POSTGRES_PASSWORD=Пароль пользователя
 DB_HOST=db
 DB_PORT=5432
+```
 Перейдите в директорию infra/ и выполните команду для создания и запуска контейнеров.
 
 sudo docker compose up -d 
