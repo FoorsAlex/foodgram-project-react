@@ -23,22 +23,22 @@ DB_HOST=db
 DB_PORT=5432
 ```
 Перейдите в директорию infra/ и выполните команду для создания и запуска контейнеров.
-
+```
 sudo docker compose up -d 
-
+```
 В контейнере web выполните миграции, создайте суперпользователя и соберите статику.
-
+```
 sudo docker compose exec backend python manage.py makemigrations
 sudo docker compose exec backend python manage.py migrate
 sudo docker compose exec backend python manage.py createsuperuser
 sudo docker compose exec backend python manage.py collectstatic --no-input 
-
+```
 Готово! Ниже представлены доступные адреса проекта:
 
-http://ваш_ip/ - главная страница сайта;
-http://ваш_ip/admin/ - админ панель;
-http://ваш_ip/api/ - API проекта
-http://ваш_ip/api/docs/redoc.html - документация к API
+- http://ваш_ip/ - главная страница сайта;
+- http://ваш_ip/admin/ - админ панель;
+- http://ваш_ip/api/ - API проекта
+- http://ваш_ip/api/docs/redoc.html - документация к API
 
-Автор
+## Автор
 Шепилов Алексей - создание api, деплой на сервер.
