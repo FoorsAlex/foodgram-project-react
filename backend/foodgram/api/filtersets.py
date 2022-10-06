@@ -1,7 +1,7 @@
-from django_filters import FilterSet, filters
-from django_filters.widgets import CSVWidget
-from recipes.models import Recipe
 from django.db.models import Q
+from django_filters import FilterSet, filters
+
+from recipes.models import Recipe
 
 
 class RecipeFilterSet(FilterSet):

@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
 User = get_user_model()
 
@@ -62,7 +62,8 @@ class ShoppingCart(models.Model):
     user = models.ForeignKey(User,
                              on_delete=models.CASCADE,
                              verbose_name='Владелец списка',
-                             related_name='owner_cart')
+                             related_name='owner_cart',
+                             )
 
 
 class Favorite(models.Model):

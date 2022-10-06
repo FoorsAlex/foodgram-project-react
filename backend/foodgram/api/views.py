@@ -1,23 +1,27 @@
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, permissions, status, pagination, filters
-from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from djoser.views import UserViewSet as DjoserUserViewSet
 import io
+
+from django.contrib.auth import get_user_model
 from django.db.models import F, Sum
 from django.http import FileResponse
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from djoser.views import UserViewSet as DjoserUserViewSet
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+from rest_framework import filters, permissions, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-from .serializers import UserSerializer, RecipeSerializer, SubcriptionsSerializer, SubscribeRecipeSerializer, \
-    IngredientSerializer, TagSerializer
-from .permissions import IsAuthenticatedOrReadOnly
-from recipes.models import Recipe, Favorite, IngredientAmount, ShoppingCart, Ingredient, Tag
+from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
+                            ShoppingCart, Tag)
 from users.models import Subscribe
-from .paginations import PageNumberLimitPagination
+
 from .filtersets import RecipeFilterSet
+from .paginations import PageNumberLimitPagination
+from .permissions import IsAuthenticatedOrReadOnly
+from .serializers import (IngredientSerializer, RecipeSerializer,
+                          SubcriptionsSerializer, SubscribeRecipeSerializer,
+                          TagSerializer, UserSerializer)
 from .viewsets import RetrieveListViewSet
 
 User = get_user_model()
@@ -56,7 +60,8 @@ class UserViewSet(DjoserUserViewSet):
                                                          user=user).exists()
             if already_subscribe or user == author:
                 return Response('Вы уже подписаны на этого'
-                                ' автора или пытаетесь подписаться на самого себя',
+                                ' автора или пытаетесь'
+                                ' подписаться на самого себя',
                                 status=status.HTTP_400_BAD_REQUEST)
             serializer = SubcriptionsSerializer(author,
                                                 context={'request': request})
@@ -131,7 +136,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             measurement_unit=F('ingredient__measurement_unit')
         ).annotate(total_amount=Sum('amount'))
         for i in shopping_list:
-            ptext = f'{i["name"]} ({i["measurement_unit"]}) - {i["total_amount"]}'
+            ptext = (f'{i["name"]} ' 
+                     f'({i["measurement_unit"]}) - {i["total_amount"]}')
             Story.append(Paragraph(ptext, styles["Normal"]))
             Story.append(Spacer(1, 12))
         doc.build(Story)
@@ -142,10 +148,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
 class IngredientViewSet(RetrieveListViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    permission_classes = [permissions.AllowAny]
     filter_backends = [filters.SearchFilter]
     search_fields = ('^name',)
 
 
 class TagViewSet(RetrieveListViewSet):
+    permission_classes = [permissions.AllowAny]
     queryset = Tag.objects.all()
     serializer_class = TagSerializer

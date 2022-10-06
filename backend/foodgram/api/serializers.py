@@ -1,10 +1,11 @@
+from django.contrib.auth import get_user_model
+from djoser.serializers import UserSerializer as DjoserUserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from django.contrib.auth import get_user_model
-from djoser.serializers import UserSerializer as DjoserUserSerializer
 
-from recipes.models import Tag, Recipe, Ingredient, IngredientAmount, Favorite, ShoppingCart
+from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
+                            ShoppingCart, Tag)
 from users.models import Subscribe
 
 User = get_user_model()
@@ -79,7 +80,8 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='ingredient.id')
     name = serializers.CharField(source='ingredient.name',
                                  read_only=True)
-    measurement_unit = serializers.CharField(source='ingredient.measurement_unit',
+    measurement_unit = serializers.CharField(source=
+                                             'ingredient.measurement_unit',
                                              read_only=True)
 
     class Meta:
@@ -89,7 +91,8 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = UserSerializer(required=False, read_only=True)
-    ingredients = IngredientAmountSerializer(many=True, source='ingredientsamount')
+    ingredients = IngredientAmountSerializer(many=True,
+                                             source='ingredientsamount')
     image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -102,13 +105,15 @@ class RecipeSerializer(serializers.ModelSerializer):
             if ingredient_item in ingredient_list:
                 raise ValidationError('Ингредиенты должны быть уникальны')
             if ingredient_item['amount'] <= 0:
-                raise ValidationError('Количество не может быть меньше или равно 0')
+                raise ValidationError('Количество не '
+                                      'может быть меньше или равно 0')
             ingredient_list.append(ingredient_item)
         return value
 
     def validate_cooking_time(self, value):
         if value < 1:
-            raise ValidationError('Время приготовления не должно быть меньше 1')
+            raise ValidationError('Время приготовления'
+                                  ' не должно быть меньше 1')
         return value
 
     def get_is_favorited(self, obj):
@@ -141,14 +146,16 @@ class RecipeSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.tags.clear()
         IngredientAmount.objects.filter(recipe=instance, ).delete()
-        self.create_ingredient(instance, validated_data.pop('ingredientsamount'))
+        self.create_ingredient(instance,
+                               validated_data.pop('ingredientsamount'))
         instance.tags.set(validated_data.pop('tags'))
         super().update(instance, validated_data)
         return instance
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['tags'] = TagSerializer(instance.tags, many=True).data
+        representation['tags'] = TagSerializer(instance.tags,
+                                               many=True).data
         return representation
 
     class Meta:
