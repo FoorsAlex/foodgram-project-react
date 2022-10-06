@@ -7,7 +7,7 @@ SECRET_KEY = 'pp69p5^l0=j+h7xj8+)l3t$bh%idk49#6he_uk!r774j1c$i%h'
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['84.252.138.118', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['130.193.55.25', '127.0.0.1', 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -121,7 +121,7 @@ AUTH_USER_MODEL = 'users.MyUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
