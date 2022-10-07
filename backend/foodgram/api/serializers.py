@@ -97,24 +97,23 @@ class RecipeSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
-    def validate_ingredients(self, value):
-        if not value:
+    def validate(self, data):
+        if not data['tags']:
+            raise ValidationError('Выберите хотябы один тег')
+        if not data['ingredientsamount']:
             raise ValidationError('Добавьте хотябы один ингредиент')
         ingredient_list = []
-        for ingredient_item in value:
+        for ingredient_item in data['ingredientsamount']:
             if ingredient_item in ingredient_list:
                 raise ValidationError('Ингредиенты должны быть уникальны')
             if ingredient_item['amount'] <= 0:
-                raise ValidationError('Количество не '
-                                      'может быть меньше или равно 0')
+                raise ValidationError('Количество не может '
+                                      'быть меньше или равно 0')
             ingredient_list.append(ingredient_item)
-        return value
-
-    def validate_cooking_time(self, value):
-        if value < 1:
-            raise ValidationError('Время приготовления'
-                                  ' не должно быть меньше 1')
-        return value
+        if data['cooking_time'] < 1:
+            raise ValidationError('Время приготовления не '
+                                  'должно быть меньше 1 минуты')
+        return data
 
     def get_is_favorited(self, obj):
         user = self.context.get('request').user.id

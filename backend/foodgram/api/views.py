@@ -1,13 +1,8 @@
-import io
-
 from django.contrib.auth import get_user_model
-from django.db.models import F, Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -15,7 +10,6 @@ from rest_framework.response import Response
 from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                             ShoppingCart, Tag)
 from users.models import Subscribe
-
 from .filtersets import RecipeFilterSet
 from .paginations import PageNumberLimitPagination
 from .permissions import IsAuthenticatedOrReadOnly
@@ -23,6 +17,7 @@ from .serializers import (IngredientSerializer, RecipeSerializer,
                           SubcriptionsSerializer, SubscribeRecipeSerializer,
                           TagSerializer, UserSerializer)
 from .viewsets import RetrieveListViewSet
+from .utils import get_shopping_cart_pdf
 
 User = get_user_model()
 
@@ -126,23 +121,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(methods=['get'],
             detail=False, )
     def download_shopping_cart(self, request):
-        buffer = io.BytesIO()
-        doc = SimpleDocTemplate(buffer)
-        Story = []
-        styles = getSampleStyleSheet()
-        shopping_list = IngredientAmount.objects.filter(
-            recipe__shopping_cart_recipe__user=request.user).values(
-            name=F('ingredient__name'),
-            measurement_unit=F('ingredient__measurement_unit')
-        ).annotate(total_amount=Sum('amount'))
-        for i in shopping_list:
-            ptext = (f'{i["name"]} ' 
-                     f'({i["measurement_unit"]}) - {i["total_amount"]}')
-            Story.append(Paragraph(ptext, styles["Normal"]))
-            Story.append(Spacer(1, 12))
-        doc.build(Story)
-        buffer.seek(0)
-        return FileResponse(buffer, filename='shopping_cart.pdf')
+        pdf = get_shopping_cart_pdf(request)
+        return FileResponse(pdf, filename='shopping_cart.pdf')
 
 
 class IngredientViewSet(RetrieveListViewSet):

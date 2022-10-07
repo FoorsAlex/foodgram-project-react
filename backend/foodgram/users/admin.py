@@ -5,8 +5,8 @@ User = get_user_model()
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'is_active')
-    filter_fields = ('username', 'email')
+    list_display = ('username', 'email', 'is_active')
+    search_fields = ('username', 'email')
     empty_value_display = '-пусто-'
     list_editable = ('is_active', )
 

@@ -22,6 +22,8 @@ class MyUser(AbstractUser):
         constraints = [UniqueConstraint(fields=['username', 'email'],
                                         name='unique_booking')]
         ordering = ['username']
+        verbose_name = 'Пользователя'
+        verbose_name_plural = 'Пользователи'
 
 
 class Subscribe(models.Model):
@@ -33,3 +35,9 @@ class Subscribe(models.Model):
                                verbose_name='Автор',
                                related_name='following',
                                on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [UniqueConstraint(fields=['user', 'author'],
+                                        name='unique_booking')]
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'

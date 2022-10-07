@@ -5,10 +5,10 @@ from .views import IngredientViewSet, RecipeViewSet, TagViewSet, UserViewSet
 
 router = DefaultRouter()
 
-router.register(r'users', UserViewSet)
-router.register(r'recipes', RecipeViewSet)
-router.register(r'ingredients', IngredientViewSet)
-router.register(r'tags', TagViewSet)
+router.register('users', UserViewSet)
+router.register('recipes', RecipeViewSet)
+router.register('ingredients', IngredientViewSet)
+router.register('tags', TagViewSet)
 
 
 urlpatterns = [
