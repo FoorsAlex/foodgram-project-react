@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django_filters import FilterSet, filters
-
-from recipes.models import Recipe
+from rest_framework.filters import SearchFilter
+from recipes.models import Recipe, Ingredient
 
 
 class RecipeFilterSet(FilterSet):
@@ -35,3 +35,8 @@ class RecipeFilterSet(FilterSet):
     class Meta:
         model = Recipe
         fields = ['tags']
+
+
+class IngredientSearchFilter(SearchFilter):
+    search_param = 'name'
+

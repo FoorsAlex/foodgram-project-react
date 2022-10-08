@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from recipes.models import (Favorite, Ingredient, IngredientAmount, Recipe,
                             ShoppingCart, Tag)
 from users.models import Subscribe
-from .filtersets import RecipeFilterSet
+from .filtersets import RecipeFilterSet, IngredientSearchFilter
 from .paginations import PageNumberLimitPagination
 from .permissions import IsAuthenticatedOrReadOnly
 from .serializers import (IngredientSerializer, RecipeSerializer,
@@ -129,7 +129,7 @@ class IngredientViewSet(RetrieveListViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = [permissions.AllowAny]
-    filter_backends = [filters.SearchFilter]
+    filter_backends = (IngredientSearchFilter,)
     search_fields = ('^name',)
 
 
