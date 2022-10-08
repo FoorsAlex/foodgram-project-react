@@ -16,7 +16,7 @@ class Tag(models.Model):
 
     class Meta:
         constraints = [UniqueConstraint(fields=['name', 'slug'],
-                                        name='unique_booking')]
+                                        name='unique_name_slug')]
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -30,7 +30,7 @@ class Ingredient(models.Model):
 
     class Meta:
         constraints = [UniqueConstraint(fields=['name', 'measurement_unit'],
-                                        name='unique_booking')]
+                                        name='unique_name_measurement_unit')]
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
 
@@ -70,7 +70,7 @@ class IngredientAmount(models.Model):
 
     class Meta:
         constraints = [UniqueConstraint(fields=['recipe', 'ingredient'],
-                                        name='unique_booking')]
+                                        name='unique_recipe_ingredient')]
         verbose_name = 'Ингредиент рецпта'
         verbose_name_plural = 'Ингредиенты рецепта'
 
@@ -89,7 +89,7 @@ class ShoppingCart(models.Model):
 
     class Meta:
         constraints = [UniqueConstraint(fields=['recipe', 'user'],
-                                        name='unique_booking')]
+                                        name='unique_recipe_user')]
         verbose_name = 'Рецепт в списке покупок'
         verbose_name_plural = 'Рецепты в списках покупок'
 
@@ -108,6 +108,6 @@ class Favorite(models.Model):
 
     class Meta:
         constraints = [UniqueConstraint(fields=['favorite_recipe', 'user'],
-                                        name='unique_booking')]
+                                        name='unique_favorite_recipe_user')]
         verbose_name = 'Рецепт в избранном'
         verbose_name_plural = 'Рецепты в избранном'

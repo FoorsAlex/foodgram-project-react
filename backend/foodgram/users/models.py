@@ -20,7 +20,7 @@ class MyUser(AbstractUser):
 
     class Meta:
         constraints = [UniqueConstraint(fields=['username', 'email'],
-                                        name='unique_booking')]
+                                        name='unique_username_email')]
         ordering = ['username']
         verbose_name = 'Пользователя'
         verbose_name_plural = 'Пользователи'
