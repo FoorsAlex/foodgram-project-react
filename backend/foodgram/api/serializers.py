@@ -104,12 +104,12 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise ValidationError('Добавьте хотябы один ингредиент')
         ingredient_list = []
         for ingredient_item in data['ingredientsamount']:
-            if ingredient_item in ingredient_list:
+            if ingredient_item['ingredient']['id'] in ingredient_list:
                 raise ValidationError('Ингредиенты должны быть уникальны')
             if ingredient_item['amount'] <= 0:
                 raise ValidationError('Количество не может '
                                       'быть меньше или равно 0')
-            ingredient_list.append(ingredient_item)
+            ingredient_list.append(ingredient_item['ingredient']['id'])
         if data['cooking_time'] < 1:
             raise ValidationError('Время приготовления не '
                                   'должно быть меньше 1 минуты')
